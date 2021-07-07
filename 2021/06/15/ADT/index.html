@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"extraordinarily0lee.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="ADT的具体实现技术—OOP 类对对象进行抽象就得到了类静态方法即类的方法，无需创建对象，利用类名即可直接调用静态方法不能直接调用非静态成员 因为此时非静态成员还没创建 接口接口+接口的实现类：实现ADT一个类不能继承多个父类，但是可以继承多个接口一个接口可以有多个实现类接口中没有构造函数接口中只有spec和方法签名 信息隐藏和封装使用接口类型声明变量客户端仅使用接口中定义的方法客户端代码无法直接">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ADT技术">
+<meta property="og:url" content="https://extraordinarily0lee.github.io/2021/06/15/ADT/index.html">
+<meta property="og:site_name" content="electronic">
+<meta property="og:description" content="ADT的具体实现技术—OOP 类对对象进行抽象就得到了类静态方法即类的方法，无需创建对象，利用类名即可直接调用静态方法不能直接调用非静态成员 因为此时非静态成员还没创建 接口接口+接口的实现类：实现ADT一个类不能继承多个父类，但是可以继承多个接口一个接口可以有多个实现类接口中没有构造函数接口中只有spec和方法签名 信息隐藏和封装使用接口类型声明变量客户端仅使用接口中定义的方法客户端代码无法直接">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2021-06-14T16:00:00.000Z">
+<meta property="article:modified_time" content="2021-07-07T15:21:20.345Z">
+<meta property="article:author" content="1192800119">
+<meta property="article:tag" content="软件构造">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://extraordinarily0lee.github.io/2021/06/15/ADT/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>ADT技术 | electronic</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">electronic</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://extraordinarily0lee.github.io/2021/06/15/ADT/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="1192800119">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="electronic">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          ADT技术
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-06-15 00:00:00" itemprop="dateCreated datePublished" datetime="2021-06-15T00:00:00+08:00">2021-06-15</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-07-07 23:21:20" itemprop="dateModified" datetime="2021-07-07T23:21:20+08:00">2021-07-07</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>ADT的具体实现技术—OOP</p>
+<h5 id="类"><a href="#类" class="headerlink" title="类"></a>类</h5><p>对对象进行抽象就得到了类<br>静态方法即类的方法，无需创建对象，利用类名即可直接调用<br>静态方法不能直接调用非静态成员 因为此时非静态成员还没创建</p>
+<h5 id="接口"><a href="#接口" class="headerlink" title="接口"></a>接口</h5><p>接口+接口的实现类：实现ADT<br>一个类不能继承多个父类，但是可以继承多个接口<br>一个接口可以有多个实现类<br>接口中没有构造函数<br>接口中只有spec和方法签名</p>
+<h5 id="信息隐藏和封装"><a href="#信息隐藏和封装" class="headerlink" title="信息隐藏和封装"></a>信息隐藏和封装</h5><p>使用接口类型声明变量<br>客户端仅使用接口中定义的方法<br>客户端代码无法直接访问属性</p>
+<h5 id="抽象类"><a href="#抽象类" class="headerlink" title="抽象类"></a>抽象类</h5><p>抽象类内最少有一个抽象方法，即允许有实现了的类<br>抽象方法：只有定义没有实现<br>继承某个抽象类的子类在实例化时，所有父类的抽象方法必须要实现<br>concrete class-&gt; abstract class-&gt;Interface</p>
+<h5 id="泛型"><a href="#泛型" class="headerlink" title="泛型"></a>泛型</h5><p>所有泛型方法声明都有一个类型参数声明部分（由尖括号分隔），该类型参数声明部分在方法返回类型之前（在下面例子中的<E>）。<br>每一个类型参数声明部分包含一个或多个类型参数，参数间用逗号隔开。一个泛型参数，也被称为一个类型变量，是用于指定一个泛型类型名称的标识符。<br>类型参数能被用来声明返回值类型，并且能作为泛型方法得到的实际参数类型的占位符。<br>泛型方法体的声明和其他方法一样。注意类型参数只能代表引用型类型，不能是原始类型（像int,double,char的等）。</p>
+<h5 id="重载"><a href="#重载" class="headerlink" title="重载"></a>重载</h5><p>不同的参数列表<br>相同或不同的返回值类型<br>相同或不同的限定词<br>可以在一个类内重载也可以在子类重载<br>相同的参数类型，不同的参数名不是重载</p>
+<h5 id="重载-amp-amp-重写"><a href="#重载-amp-amp-重写" class="headerlink" title="重载&amp;&amp;重写"></a>重载&amp;&amp;重写</h5><p>重载：选择哪个方法进行调用是在编译阶段发生的，根据引用的类型来选择<br>重写：选择哪个方法进行调用是在运行阶段发生的，根据对象的类型来进行选择<br>所以调用子类中父类方法的重载就必须创建子类的引用<br>编译时到底调用哪个方法却决于现在是哪个引用，所以当前引用必须得有调用的方法才能通过编译，这是重载的静态检查，然后如果某个方法子类中也有、父类中也有，运行时究竟用那个方法，根据具体对象的值决定，这是重写的动态检查</p>
+<h5 id="方法的重写规则"><a href="#方法的重写规则" class="headerlink" title="方法的重写规则"></a>方法的重写规则</h5><p>参数列表必须完全与被重写方法的相同。<br>返回类型与被重写方法的返回类型可以不相同，但是必须是父类返回值的派生类（java5 及更早版本返回类型要一样，java7 及更高版本可以不同）。<br>访问权限不能比父类中被重写的方法的访问权限更低。例如：如果父类的一个方法被声明为 public，那么在子类中重写该方法就不能声明为 protected。<br>父类的成员方法只能被它的子类重写。<br>声明为 final 的方法不能被重写。<br>声明为 static 的方法不能被重写，但是能够被再次声明。<br>子类和父类在同一个包中，那么子类可以重写父类所有方法，除了声明为 private 和 final 的方法。<br>子类和父类不在同一个包中，那么子类只能够重写父类的声明为 public 和 protected 的非 final 方法。<br>重写的方法能够抛出任何非强制异常，无论被重写的方法是否抛出异常。但是，重写的方法不能抛出新的强制性异常，或者比被重写方法声明的更广泛的强制性异常，反之则可以。<br>构造方法不能被重写。<br>如果不能继承一个方法，则不能重写这个方法。</p>
+<h5 id="重载-Overload"><a href="#重载-Overload" class="headerlink" title="重载(Overload)"></a>重载(Overload)</h5><p>重载(overloading) 是在一个类里面，方法名字相同，而参数不同。返回类型可以相同也可以不同。<br>每个重载的方法（或者构造函数）都必须有一个独一无二的参数类型列表。<br>最常用的地方就是构造器的重载。</p>
+<h5 id="重载规则"><a href="#重载规则" class="headerlink" title="重载规则:"></a>重载规则:</h5><p>被重载的方法必须改变参数列表(参数个数或类型不一样)；<br>被重载的方法可以改变返回类型；<br>被重载的方法可以改变访问修饰符；<br>被重载的方法可以声明新的或更广的检查异常；<br>方法能够在同一个类中或者在一个子类中被重载。<br>无法以返回值类型作为重载函数的区分标准。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E8%BD%AF%E4%BB%B6%E6%9E%84%E9%80%A0/" rel="tag"># 软件构造</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/06/08/%E8%BD%AF%E4%BB%B6%E6%9E%84%E9%80%A0%E5%A4%8D%E4%B9%A0%E7%9F%A5%E8%AF%86%E7%82%B9/" rel="prev" title="规约书写">
+      <i class="fa fa-chevron-left"></i> 规约书写
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/06/15/article-title/" rel="next" title="ADT技术">
+      ADT技术 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E7%B1%BB"><span class="nav-number">1.</span> <span class="nav-text">类</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%8E%A5%E5%8F%A3"><span class="nav-number">2.</span> <span class="nav-text">接口</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E4%BF%A1%E6%81%AF%E9%9A%90%E8%97%8F%E5%92%8C%E5%B0%81%E8%A3%85"><span class="nav-number">3.</span> <span class="nav-text">信息隐藏和封装</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%8A%BD%E8%B1%A1%E7%B1%BB"><span class="nav-number">4.</span> <span class="nav-text">抽象类</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%B3%9B%E5%9E%8B"><span class="nav-number">5.</span> <span class="nav-text">泛型</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E9%87%8D%E8%BD%BD"><span class="nav-number">6.</span> <span class="nav-text">重载</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E9%87%8D%E8%BD%BD-amp-amp-%E9%87%8D%E5%86%99"><span class="nav-number">7.</span> <span class="nav-text">重载&amp;&amp;重写</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%96%B9%E6%B3%95%E7%9A%84%E9%87%8D%E5%86%99%E8%A7%84%E5%88%99"><span class="nav-number">8.</span> <span class="nav-text">方法的重写规则</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E9%87%8D%E8%BD%BD-Overload"><span class="nav-number">9.</span> <span class="nav-text">重载(Overload)</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E9%87%8D%E8%BD%BD%E8%A7%84%E5%88%99"><span class="nav-number">10.</span> <span class="nav-text">重载规则:</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">1192800119</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">5</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">1192800119</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
